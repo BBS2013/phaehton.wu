@@ -1,4 +1,4 @@
-# DoIP (Diagnostics over IP) 学习指南
+# DoIP (Diagnostics over IP) 学习指南 (C++ 版)
 
 欢迎来到 DoIP 学习项目！DoIP (ISO 13400) 是一种通过以太网（IP 网络）对车辆进行诊断的协议。
 
@@ -36,38 +36,44 @@ DoIP 允许外部测试设备（如诊断仪）通过以太网与车辆内部的
 | Payload Length | 4 | 后面载荷数据的长度 |
 | Payload Data | N | 具体的数据内容 |
 
-## 项目包含的示例
+## 项目结构
 
--   `doip_server.py`: 模拟一辆车（DoIP 实体）。
--   `doip_client.py`: 模拟一个诊断仪（External Test Equipment）。
+-   `doip_server.cpp`: 模拟一辆车（DoIP 实体），负责响应发现请求和处理诊断命令。
+-   `doip_client.cpp`: 模拟一个诊断仪（External Test Equipment），负责发起连接和发送诊断请求。
+-   `doip_common.h`: 定义 DoIP 协议头部结构和常量。
+-   `Makefile`: 项目编译脚本。
 
-## 快速开始
+## 如何运行
 
 你需要两个终端窗口来分别运行服务端（车）和客户端（诊断仪）。
 
-### 1. 运行服务端 (车辆)
+### 1. 编译代码
+
+在终端中输入 `make` 进行编译：
+```bash
+make
+```
+这将生成 `doip_server` 和 `doip_client` 两个可执行文件。
+
+### 2. 运行服务端 (车辆)
 
 在一个终端中运行：
-
 ```bash
-python3 doip_server.py
+./doip_server
 ```
-
-你应该会看到：
+输出示例：
 ```
-[*] 启动 DoIP 车辆模拟器...
+[*] 启动 DoIP 车辆模拟器 (C++ Version)...
 [*] UDP 监听端口 13400 (车辆发现)
 [*] TCP 监听端口 13400 (诊断连接)
 ```
 
-### 2. 运行客户端 (诊断仪)
+### 3. 运行客户端 (诊断仪)
 
 在另一个终端中运行：
-
 ```bash
-python3 doip_client.py
+./doip_client
 ```
-
 客户端会自动执行以下步骤：
 1.  发送 UDP 广播发现车辆。
 2.  建立 TCP 连接。
@@ -79,10 +85,10 @@ python3 doip_client.py
 
 **Client 端:**
 ```
-=== DoIP 诊断仪模拟器 ===
+=== DoIP 诊断仪模拟器 (C++ Version) ===
 
 [Step 1] 发送车辆发现请求 (UDP Broadcast)...
-[UDP] 收到响应 来自 ('127.0.0.1', 13400)
+[UDP] 收到响应 来自 127.0.0.1
        -> 发现车辆 VIN: DOIPDEMOCAR12345
        -> 逻辑地址: 0x1000
 
@@ -95,8 +101,13 @@ python3 doip_client.py
 
 [Step 5] 等待响应...
 [TCP] 收到 DoIP ACK (Positive)
-[TCP] 收到诊断响应: 62F190...
-       -> 来自: 0x1000 发给: 0x0E80
+[TCP] 收到诊断响应 SA=0x1000 TA=0xe80
+       -> UDS Data: 62 F1 90 
 
 === 演示结束 ===
+```
+
+## 清理编译文件
+```bash
+make clean
 ```
