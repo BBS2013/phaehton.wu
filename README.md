@@ -38,51 +38,66 @@ DoIP 允许外部测试设备（如诊断仪）通过以太网与车辆内部的
 
 ## 项目包含的示例
 
+本项目提供 Python 和 C++ 两种语言的实现。
+
+### Python 版本
 -   `doip_server.py`: 模拟一辆车（DoIP 实体）。
 -   `doip_client.py`: 模拟一个诊断仪（External Test Equipment）。
 
-## 快速开始
+### C++ 版本
+-   `doip_server.cpp`: C++ 版车辆模拟器。
+-   `doip_client.cpp`: C++ 版诊断仪模拟器。
+-   `doip_common.h`: 公共头文件。
+-   `Makefile`: 编译脚本。
 
-你需要两个终端窗口来分别运行服务端（车）和客户端（诊断仪）。
+---
+
+## 如何运行 (Python 版)
+
+你需要两个终端窗口。
 
 ### 1. 运行服务端 (车辆)
-
-在一个终端中运行：
-
 ```bash
 python3 doip_server.py
 ```
 
-你应该会看到：
-```
-[*] 启动 DoIP 车辆模拟器...
-[*] UDP 监听端口 13400 (车辆发现)
-[*] TCP 监听端口 13400 (诊断连接)
-```
-
 ### 2. 运行客户端 (诊断仪)
-
-在另一个终端中运行：
-
 ```bash
 python3 doip_client.py
 ```
 
-客户端会自动执行以下步骤：
-1.  发送 UDP 广播发现车辆。
-2.  建立 TCP 连接。
-3.  发送路由激活请求。
-4.  发送一个模拟的 UDS 请求 (0x22 读取数据)。
-5.  显示车辆回复的 UDS 响应。
+---
 
-### 预期输出示例
+## 如何运行 (C++ 版)
+
+### 1. 编译代码
+在终端中输入 `make` 进行编译：
+```bash
+make
+```
+这将生成 `doip_server` 和 `doip_client` 可执行文件。
+
+### 2. 运行服务端 (车辆)
+```bash
+./doip_server
+```
+
+### 3. 运行客户端 (诊断仪)
+新开一个终端窗口运行：
+```bash
+./doip_client
+```
+
+---
+
+## 预期输出示例
 
 **Client 端:**
 ```
-=== DoIP 诊断仪模拟器 ===
+=== DoIP 诊断仪模拟器 (C++ Version) ===
 
 [Step 1] 发送车辆发现请求 (UDP Broadcast)...
-[UDP] 收到响应 来自 ('127.0.0.1', 13400)
+[UDP] 收到响应 来自 127.0.0.1
        -> 发现车辆 VIN: DOIPDEMOCAR12345
        -> 逻辑地址: 0x1000
 
@@ -95,8 +110,8 @@ python3 doip_client.py
 
 [Step 5] 等待响应...
 [TCP] 收到 DoIP ACK (Positive)
-[TCP] 收到诊断响应: 62F190...
-       -> 来自: 0x1000 发给: 0x0E80
+[TCP] 收到诊断响应 SA=0x1000 TA=0xe80
+       -> UDS Data: 62 F1 90 
 
 === 演示结束 ===
 ```
